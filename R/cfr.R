@@ -126,7 +126,7 @@ case_fatality_rate_df <- function(x, deaths, group = NULL, conf_level = 0.95,
   )
 
   # unnesting the list column
-  res <- tidyr::unnest(res, cols = "cfr")
+  res <- tidyr::unnest(res, col = "cfr")
 
   # adding the total if there was grouping
   if (add_total && wants_grouping) {
@@ -142,7 +142,8 @@ case_fatality_rate_df <- function(x, deaths, group = NULL, conf_level = 0.95,
       !!qgroup := factor("Total"),
       deaths = tot$deaths,
       population = tot$population,
-      cfr = tot$cfr
+      cfr = tot$cfr, 
+      .name_repair = "minimal"
     )
     # merge CI gives different numbers of columns, this accounts for that.
     if (mergeCI) {
