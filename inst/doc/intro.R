@@ -5,39 +5,25 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  # install.packages("drat")
-#  drat::addRepo("R4EPI")
-#  install.packages("epikit")
-
-## ----eval = FALSE-------------------------------------------------------------
 #  # install.packages("remotes")
 #  remotes::install_github("R4EPI/epikit")
 
 ## ----load_packages------------------------------------------------------------
 library("epikit")
 
-## ----find_breaks--------------------------------------------------------------
-find_breaks(100) # four breaks from 1 to 100
-find_breaks(100, snap = 20) # four breaks, snap to the nearest 20
-find_breaks(100, snap = 20, ceiling = TRUE) # include the highest number
-
-## ----table_mods, results = 'asis', eval = requireNamespace("knitr") && requireNamespace("magrittr")----
+## ----ages, eval = requireNamespace("knitr") && requireNamespace("magrittr")----
 library("knitr")
 library("magrittr")
+
+set.seed(1)
+x <- sample(0:100, 20, replace = TRUE)
+y <- ifelse(x < 2, sample(48, 20, replace = TRUE), NA)
 df <- data.frame(
-  `a n` = 1:6,
-  `a prop` = round((1:6) / 6, 2),
-  `a deff` = round(pi, 2),
-  `b n` = 6:1,
-  `b prop` = round((6:1) / 6, 2),
-  `b deff` = round(pi * 2, 2),
-  check.names = FALSE
+  age_years = age_categories(x, upper = 80), 
+  age_months = age_categories(y, upper = 16, by = 6)
 )
-knitr::kable(df)
-df %>%
-  rename_redundant("%" = "prop", "Design Effect" = "deff") %>%
-  augment_redundant(" (n)" = " n$") %>%
-  knitr::kable()
+df %>% 
+  group_age_categories(years = age_years, months = age_months)
 
 ## ----rates--------------------------------------------------------------------
 attack_rate(10, 50)
@@ -65,14 +51,40 @@ unite_ci(df, "slope (CI)", estimate, lower, upper, m100 = FALSE, percent = FALSE
 # merge_ci just needs to know where the estimate is
 merge_ci_df(df, e = 2)
 
-## ----ages---------------------------------------------------------------------
-set.seed(1)
-x <- sample(0:100, 20, replace = TRUE)
-y <- ifelse(x < 2, sample(48, 20, replace = TRUE), NA)
+## ----find_breaks--------------------------------------------------------------
+find_breaks(100) # four breaks from 1 to 100
+find_breaks(100, snap = 20) # four breaks, snap to the nearest 20
+find_breaks(100, snap = 20, ceiling = TRUE) # include the highest number
+
+## ----population_propotions----------------------------------------------------
+# get population counts based on proportion, stratified
+gen_population(groups = c("0-4","5-14","15-29","30-44","45+"), 
+               strata = c("Male", "Female"), 
+               proportions = c(0.079, 0.134, 0.139, 0.082, 0.067))
+
+## -----------------------------------------------------------------------------
+
+# get population counts based on counts, stratified - type out counts
+# for each group and strata
+gen_population(groups = c("0-4","5-14","15-29","30-44","45+"), 
+               strata = c("Male", "Female"), 
+               counts = c(20, 10, 30, 40, 0, 0, 40, 30, 20, 20))
+
+
+## ----table_mods, results = 'asis'---------------------------------------------
+
 df <- data.frame(
-  age_years = age_categories(x, upper = 80), 
-  age_months = age_categories(y, upper = 16, by = 6)
+  `a n` = 1:6,
+  `a prop` = round((1:6) / 6, 2),
+  `a deff` = round(pi, 2),
+  `b n` = 6:1,
+  `b prop` = round((6:1) / 6, 2),
+  `b deff` = round(pi * 2, 2),
+  check.names = FALSE
 )
-df %>% 
-  group_age_categories(years = age_years, months = age_months)
+knitr::kable(df)
+df %>%
+  rename_redundant("%" = "prop", "Design Effect" = "deff") %>%
+  augment_redundant(" (n)" = " n$") %>%
+  knitr::kable()
 
