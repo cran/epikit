@@ -1,6 +1,6 @@
 Package: epikit
 Title: Miscellaneous Helper Tools for Epidemiologists
-Version: 0.1.5
+Version: 0.1.6
 Authors@R: 
     c(person(given = "Alexander",
              family = "Spina",
@@ -38,11 +38,11 @@ BugReports: https://github.com/R4EPI/epikit/issues
 VignetteBuilder: knitr
 Config/Needs/check: R4EPI/epidict
 NeedsCompilation: no
-Packaged: 2023-02-14 17:12:50 UTC; zhian
+Packaged: 2024-01-22 23:59:15 UTC; zhian
 Author: Alexander Spina [aut] (<https://orcid.org/0000-0001-8425-1867>),
   Zhian N. Kamvar [aut, cre] (<https://orcid.org/0000-0003-1458-7108>),
   Dirk Schumacher [aut],
   Kate Doyle [ctb]
 Maintainer: Zhian N. Kamvar <zkamvar@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-02-15 21:10:02 UTC
+Date/Publication: 2024-01-23 07:50:06 UTC
