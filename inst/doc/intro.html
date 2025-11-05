@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -342,12 +342,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <p>The goal of {epikit} is to provide miscellaneous functions for
 applied epidemiologists. This is a product of the R4EPIs project; learn
-more at <a href="https://r4epis.netlify.app/" class="uri">https://r4epis.netlify.app/</a>.</p>
+more at <a href="https://r4epi.github.io/sitrep/" class="uri">https://r4epi.github.io/sitrep/</a>.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>You can install {epikit} from CRAN (see details for the latest
 version):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;epikit&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;epikit&quot;</span>)</span></code></pre></div>
 <details>
 <!--
 NOTE: everything inside the details tag will be collapsed and effectively
@@ -356,15 +356,13 @@ hidden from the user
 <summary style="text-decoration: underline">
 Click here for alternative installation options
 </summary>
-<p>If there is a bugfix or feature that is not yet on CRAN, you can
-install it via the {drat} package:</p>
 <p>You can also install the in-development version from GitHub using the
 {remotes} package (but there’s no guarantee that it will be stable):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;remotes&quot;)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;R4EPI/epikit&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># install.packages(&quot;remotes&quot;)</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;R4EPI/epikit&quot;</span>) </span></code></pre></div>
 </details>
 <hr />
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;epikit&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;epikit&quot;</span>)</span></code></pre></div>
 <p>The {epikit} was primarily designed to house convenience functions
 for applied epidemiologists to use in tidying their reports. The
 functions in {epikit} come in a few categories:</p>
@@ -381,81 +379,40 @@ different age categories in columns (e.g. years, months, weeks) and
 combine them into a single column, selecting the column with the lowest
 priority.</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;knitr&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;magrittr&quot;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(x <span class="sc">&lt;</span> <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">48</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="cn">NA</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">age_years =</span> <span class="fu">age_categories</span>(x, <span class="at">upper =</span> <span class="dv">80</span>), </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">age_months =</span> <span class="fu">age_categories</span>(y, <span class="at">upper =</span> <span class="dv">16</span>, <span class="at">by =</span> <span class="dv">6</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_age_categories</span>(<span class="at">years =</span> age_years, <span class="at">months =</span> age_months)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    age_years age_months age_category</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      60-69       &lt;NA&gt;  60-69 years</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      30-39       &lt;NA&gt;  30-39 years</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3        0-9        16+   16+ months</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4      30-39       &lt;NA&gt;  30-39 years</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5        80+       &lt;NA&gt;    80+ years</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6      40-49       &lt;NA&gt;  40-49 years</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7      10-19       &lt;NA&gt;  10-19 years</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8        80+       &lt;NA&gt;    80+ years</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9      50-59       &lt;NA&gt;  50-59 years</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10     50-59       &lt;NA&gt;  50-59 years</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11       80+       &lt;NA&gt;    80+ years</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12       80+       &lt;NA&gt;    80+ years</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13     20-29       &lt;NA&gt;  20-29 years</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14     50-59       &lt;NA&gt;  50-59 years</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15     70-79       &lt;NA&gt;  70-79 years</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16       0-9       &lt;NA&gt;    0-9 years</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17     70-79       &lt;NA&gt;  70-79 years</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18     70-79       &lt;NA&gt;  70-79 years</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19       80+       &lt;NA&gt;    80+ years</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 20     30-39       &lt;NA&gt;  30-39 years</span></span></code></pre></div>
-</div>
-<div id="quick-proportions-with-conficence-intervals" class="section level2">
-<h2>Quick proportions with conficence intervals</h2>
-<p>There are three functions that will provide quick statistics for
-different rates based on binomial estimates of proportions from
-<code>binom::binom.wilson()</code></p>
-<ul>
-<li><code>attack_rate()</code></li>
-<li><code>case_fatality_rate()</code></li>
-<li><code>mortality_rate()</code></li>
-</ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attack_rate</span>(<span class="dv">10</span>, <span class="dv">50</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   cases population ar    lower    upper</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    10         50 20 11.24375 33.03711</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">case_fatality_rate</span>(<span class="dv">2</span>, <span class="dv">50</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   deaths population cfr    lower    upper</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      2         50   4 1.103888 13.46009</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mortality_rate</span>(<span class="dv">40</span>, <span class="dv">50000</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   deaths population mortality per 10 000   lower    upper</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     40      50000                    8 5.87591 10.89109</span></span></code></pre></div>
-<p>In addition, it’s possible to rapidly calculate Case fatality rate
-from a linelist, stratified by different groups (e.g. gender):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;outbreaks&quot;</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">case_fatality_rate_df</span>(ebola_sim_clean<span class="sc">$</span>linelist, </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  outcome <span class="sc">==</span> <span class="st">&quot;Death&quot;</span>, </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> gender,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">add_total =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mergeCI =</span> <span class="cn">TRUE</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: There was 1 warning in `dplyr::mutate()`.</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ In argument: `gender = forcats::fct_explicit_na(gender, &quot;(Missing)&quot;)`.</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Caused by warning:</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! `fct_explicit_na()` was deprecated in forcats 1.0.0.</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Please use `fct_na_value_to_level()` instead.</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ The deprecated feature was likely used in the epikit package.</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Please report the issue at &lt;https://github.com/R4EPI/epikit/issues&gt;.</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 5</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   gender deaths population   cfr ci           </span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;   &lt;int&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;        </span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 f        1291       2280  56.6 (54.58-58.64)</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 m        1273       2247  56.7 (54.59-58.69)</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Total    2564       4527  56.6 (55.19-58.08)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;knitr&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; Warning: Paket &#39;knitr&#39; wurde unter R Version 4.4.3 erstellt</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;magrittr&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(x <span class="sc">&lt;</span> <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">48</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="cn">NA</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">age_years =</span> <span class="fu">age_categories</span>(x, <span class="at">upper =</span> <span class="dv">80</span>), </span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">age_months =</span> <span class="fu">age_categories</span>(y, <span class="at">upper =</span> <span class="dv">16</span>, <span class="at">by =</span> <span class="dv">6</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">group_age_categories</span>(<span class="at">years =</span> age_years, <span class="at">months =</span> age_months)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt;    age_years age_months age_category</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 1      60-69       &lt;NA&gt;  60-69 years</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 2      30-39       &lt;NA&gt;  30-39 years</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; 3        0-9        16+   16+ months</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; 4      30-39       &lt;NA&gt;  30-39 years</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; 5        80+       &lt;NA&gt;    80+ years</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 6      40-49       &lt;NA&gt;  40-49 years</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; 7      10-19       &lt;NA&gt;  10-19 years</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; 8        80+       &lt;NA&gt;    80+ years</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; 9      50-59       &lt;NA&gt;  50-59 years</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; 10     50-59       &lt;NA&gt;  50-59 years</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; 11       80+       &lt;NA&gt;    80+ years</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; 12       80+       &lt;NA&gt;    80+ years</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; 13     20-29       &lt;NA&gt;  20-29 years</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; 14     50-59       &lt;NA&gt;  50-59 years</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; 15     70-79       &lt;NA&gt;  70-79 years</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; 16       0-9       &lt;NA&gt;    0-9 years</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 17     70-79       &lt;NA&gt;  70-79 years</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 18     70-79       &lt;NA&gt;  70-79 years</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; 19       80+       &lt;NA&gt;    80+ years</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; 20     30-39       &lt;NA&gt;  30-39 years</span></span></code></pre></div>
 </div>
 <div id="inline-functions" class="section level2">
 <h2>Inline functions</h2>
@@ -471,20 +428,35 @@ fractions, multiplying by 100 beforehand.</li>
 <p>The <code>_df</code> suffixes (<code>fmt_ci_df()</code>,
 <code>fmt_pci_df()</code>) will print the confidence intervals for data
 stored in data frames. These are designed to work with the outputs of
-the rates functions. For example,
-<code>fmt_ci_df(attack_rate(10, 50))</code> will produce 20.00% (CI
+the rates functions. Such as the below dataframe output.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Create fake dataframe </span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">deaths =</span> <span class="dv">10</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">population =</span> <span class="dv">50</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">cfr =</span> <span class="dv">20</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">lower =</span> <span class="fl">11.24375</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">upper =</span> <span class="fl">33.03711</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)</span></code></pre></div>
+<ul>
+<li><p>For example, <code>fmt_ci_df(dat)</code> will produce 20.00% (CI
 11.24-33.04). All of these suffixes will have three options
 <code>e</code>, <code>l</code>, and <code>u</code>. These refer to
 <code>estimate</code>, <code>lower</code>, and <code>upper</code> column
-positions or names.</p>
-<ul>
-<li><code>fmt_count()</code> will count a condition in a data frame and
-present the number and percent of <code>TRUE</code> values. For example,
-if you wanted to count the number of women patients from Rokupa
-hospital, you would write:
-<code>fmt_count(ebola_sim_clean$linelist, gender == &quot;f&quot;, hospital == &quot;Rokupa Hospital&quot;)</code>
-and it would produce: 210 (3.6%)</li>
+positions or names.</p></li>
+<li><p><code>fmt_count()</code> will count a condition in a data frame
+and present the number and percent of <code>TRUE</code> values. For
+example, if you wanted to count the number of women patients from
+hospital from the below fake dataset.</p></li>
 </ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="do">## create fake dataset</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">&quot;f&quot;</span>, <span class="st">&quot;m&quot;</span>), <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">location =</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">&quot;hospital&quot;</span>, <span class="st">&quot;clinic&quot;</span>, <span class="st">&quot;community&quot;</span>), <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span></code></pre></div>
+<p>You would
+write:<code>fmt_count(dat, gender == &quot;f&quot;, location == &quot;hospital&quot;)</code>
+and it would produce: 18 (18.0%)</p>
 </div>
 <div id="confidence-interval-manipulation" class="section level2">
 <h2>Confidence interval manipulation</h2>
@@ -500,34 +472,34 @@ estimate into a single character column. This generally has more options
 than <code>merge_ci()</code></li>
 </ul>
 <p>This is useful for reporting models:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="dv">100</span><span class="sc">/</span>mpg <span class="sc">~</span> disp <span class="sc">+</span> hp <span class="sc">+</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">v =</span> <span class="fu">names</span>(<span class="fu">coef</span>(fit)), <span class="at">e =</span> <span class="fu">coef</span>(fit), <span class="fu">confint</span>(fit), <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;variable&quot;</span>, <span class="st">&quot;estimate&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      variable    estimate        lower       upper</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept) 0.740647656 -0.774822875 2.256118188</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2        disp 0.002702925 -0.002867999 0.008273849</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          hp 0.005274547 -0.001400580 0.011949674</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          wt 1.001303136  0.380088737 1.622517536</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          am 0.155814790 -0.614677730 0.926307310</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># unite CI has more options</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">unite_ci</span>(df, <span class="st">&quot;slope (CI)&quot;</span>, estimate, lower, upper, <span class="at">m100 =</span> <span class="cn">FALSE</span>, <span class="at">percent =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      variable        slope (CI)</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept) 0.74 (-0.77-2.26)</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2        disp 0.00 (-0.00-0.01)</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          hp 0.01 (-0.00-0.01)</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          wt  1.00 (0.38-1.62)</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          am 0.16 (-0.61-0.93)</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co"># merge_ci just needs to know where the estimate is</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="fu">merge_ci_df</span>(df, <span class="at">e =</span> <span class="dv">2</span>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      variable    estimate           ci</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept) 0.740647656 (-0.77-2.26)</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2        disp 0.002702925 (-0.00-0.01)</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          hp 0.005274547 (-0.00-0.01)</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          wt 1.001303136  (0.38-1.62)</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          am 0.155814790 (-0.61-0.93)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="dv">100</span><span class="sc">/</span>mpg <span class="sc">~</span> disp <span class="sc">+</span> hp <span class="sc">+</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>df  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">v =</span> <span class="fu">names</span>(<span class="fu">coef</span>(fit)), <span class="at">e =</span> <span class="fu">coef</span>(fit), <span class="fu">confint</span>(fit), <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;variable&quot;</span>, <span class="st">&quot;estimate&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">print</span>(df)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt;      variable    estimate        lower       upper</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept) 0.740647656 -0.774822875 2.256118188</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 2        disp 0.002702925 -0.002867999 0.008273849</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 3          hp 0.005274547 -0.001400580 0.011949674</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 4          wt 1.001303136  0.380088737 1.622517536</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 5          am 0.155814790 -0.614677730 0.926307310</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># unite CI has more options</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="fu">unite_ci</span>(df, <span class="st">&quot;slope (CI)&quot;</span>, estimate, lower, upper, <span class="at">m100 =</span> <span class="cn">FALSE</span>, <span class="at">percent =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt;      variable        slope (CI)</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept) 0.74 (-0.77-2.26)</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; 2        disp 0.00 (-0.00-0.01)</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; 3          hp 0.01 (-0.00-0.01)</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; 4          wt  1.00 (0.38-1.62)</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; 5          am 0.16 (-0.61-0.93)</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co"># merge_ci just needs to know where the estimate is</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="fu">merge_ci_df</span>(df, <span class="at">e =</span> <span class="dv">2</span>)</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt;      variable    estimate           ci</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept) 0.740647656 (-0.77-2.26)</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; 2        disp 0.002702925 (-0.00-0.01)</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; 3          hp 0.005274547 (-0.00-0.01)</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt; 4          wt 1.001303136  (0.38-1.62)</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co">#&gt; 5          am 0.155814790 (-0.61-0.93)</span></span></code></pre></div>
 </div>
 <div id="give-me-a-break" class="section level2">
 <h2>Give me a break</h2>
@@ -535,12 +507,12 @@ than <code>merge_ci()</code></li>
 need for a grouping or color scale, you can use
 <code>find_breaks()</code>. This will always start from 1, so that you
 can include zero in your scale when you need to.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find_breaks</span>(<span class="dv">100</span>) <span class="co"># four breaks from 1 to 100</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  1 26 51 76</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">find_breaks</span>(<span class="dv">100</span>, <span class="at">snap =</span> <span class="dv">20</span>) <span class="co"># four breaks, snap to the nearest 20</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  1 41 81</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">find_breaks</span>(<span class="dv">100</span>, <span class="at">snap =</span> <span class="dv">20</span>, <span class="at">ceiling =</span> <span class="cn">TRUE</span>) <span class="co"># include the highest number</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]   1  41  81 100</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">find_breaks</span>(<span class="dv">100</span>) <span class="co"># four breaks from 1 to 100</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; [1]  1 26 51 76</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">find_breaks</span>(<span class="dv">100</span>, <span class="at">snap =</span> <span class="dv">20</span>) <span class="co"># four breaks, snap to the nearest 20</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; [1]  1 41 81</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">find_breaks</span>(<span class="dv">100</span>, <span class="at">snap =</span> <span class="dv">20</span>, <span class="at">ceiling =</span> <span class="cn">TRUE</span>) <span class="co"># include the highest number</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; [1]   1  41  81 100</span></span></code></pre></div>
 </div>
 <div id="pull-together-population-counts" class="section level2">
 <h2>Pull together population counts</h2>
@@ -550,45 +522,45 @@ help. If you only know the proportions in each group the function will
 convert this to counts for you - whereas if you have counts, you can
 type those in directly. The default proportions are based on Doctors
 Without Borders general emergency intervention standard values.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get population counts based on proportion, stratified</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gen_population</span>(<span class="at">groups =</span> <span class="fu">c</span>(<span class="st">&quot;0-4&quot;</span>,<span class="st">&quot;5-14&quot;</span>,<span class="st">&quot;15-29&quot;</span>,<span class="st">&quot;30-44&quot;</span>,<span class="st">&quot;45+&quot;</span>), </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">strata =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">proportions =</span> <span class="fu">c</span>(<span class="fl">0.079</span>, <span class="fl">0.134</span>, <span class="fl">0.139</span>, <span class="fl">0.082</span>, <span class="fl">0.067</span>))</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in gen_population(groups = c(&quot;0-4&quot;, &quot;5-14&quot;, &quot;15-29&quot;, &quot;30-44&quot;, &quot;45+&quot;), : Given proportions (or counts) is not the same as</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; groups multiplied by strata length, they will be repeated to match</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 4</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    groups strata proportions     n</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;  &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 0-4    Male         0.079    79</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 5-14   Male         0.134   134</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 15-29  Male         0.139   139</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 30-44  Male         0.082    82</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 45+    Male         0.067    67</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 0-4    Female       0.079    79</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 5-14   Female       0.134   134</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 15-29  Female       0.139   139</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 30-44  Female       0.082    82</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 45+    Female       0.067    67</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># get population counts based on proportion, stratified</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">gen_population</span>(<span class="at">groups =</span> <span class="fu">c</span>(<span class="st">&quot;0-4&quot;</span>,<span class="st">&quot;5-14&quot;</span>,<span class="st">&quot;15-29&quot;</span>,<span class="st">&quot;30-44&quot;</span>,<span class="st">&quot;45+&quot;</span>), </span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>               <span class="at">strata =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>               <span class="at">proportions =</span> <span class="fu">c</span>(<span class="fl">0.079</span>, <span class="fl">0.134</span>, <span class="fl">0.139</span>, <span class="fl">0.082</span>, <span class="fl">0.067</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; Warning in gen_population(groups = c(&quot;0-4&quot;, &quot;5-14&quot;, &quot;15-29&quot;, &quot;30-44&quot;, &quot;45+&quot;), : Given proportions (or counts) is not the same as</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; groups multiplied by strata length, they will be repeated to match</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 4</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt;    groups strata proportions     n</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;  &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt;  1 0-4    Male         0.079    79</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt;  2 5-14   Male         0.134   134</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt;  3 15-29  Male         0.139   139</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;  4 30-44  Male         0.082    82</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt;  5 45+    Male         0.067    67</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt;  6 0-4    Female       0.079    79</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt;  7 5-14   Female       0.134   134</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt;  8 15-29  Female       0.139   139</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt;  9 30-44  Female       0.082    82</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; 10 45+    Female       0.067    67</span></span></code></pre></div>
 <p>Type in counts directly to get the groups in a data frame.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># get population counts based on counts, stratified - type out counts</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># for each group and strata</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">gen_population</span>(<span class="at">groups =</span> <span class="fu">c</span>(<span class="st">&quot;0-4&quot;</span>,<span class="st">&quot;5-14&quot;</span>,<span class="st">&quot;15-29&quot;</span>,<span class="st">&quot;30-44&quot;</span>,<span class="st">&quot;45+&quot;</span>), </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">strata =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), </span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">counts =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">40</span>, <span class="dv">30</span>, <span class="dv">20</span>, <span class="dv">20</span>))</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 4</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    groups strata proportions     n</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;  &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 0-4    Male        0.0952    20</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 5-14   Male        0.0476    10</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 15-29  Male        0.143     30</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 30-44  Male        0.190     40</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 45+    Male        0          0</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 0-4    Female      0          0</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 5-14   Female      0.190     40</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 15-29  Female      0.143     30</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 30-44  Female      0.0952    20</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 45+    Female      0.0952    20</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co"># get population counts based on counts, stratified - type out counts</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co"># for each group and strata</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="fu">gen_population</span>(<span class="at">groups =</span> <span class="fu">c</span>(<span class="st">&quot;0-4&quot;</span>,<span class="st">&quot;5-14&quot;</span>,<span class="st">&quot;15-29&quot;</span>,<span class="st">&quot;30-44&quot;</span>,<span class="st">&quot;45+&quot;</span>), </span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>               <span class="at">strata =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), </span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>               <span class="at">counts =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">40</span>, <span class="dv">30</span>, <span class="dv">20</span>, <span class="dv">20</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 4</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt;    groups strata proportions     n</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;  &lt;fct&gt;        &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt;  1 0-4    Male        0.0952    20</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt;  2 5-14   Male        0.0476    10</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt;  3 15-29  Male        0.143     30</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt;  4 30-44  Male        0.190     40</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt;  5 45+    Male        0          0</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt;  6 0-4    Female      0          0</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt;  7 5-14   Female      0.190     40</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt;  8 15-29  Female      0.143     30</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt;  9 30-44  Female      0.0952    20</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt; 10 45+    Female      0.0952    20</span></span></code></pre></div>
 </div>
 <div id="table-modification" class="section level2">
 <h2>Table modification</h2>
@@ -607,17 +579,17 @@ become <code>hospitalized (n)</code> and
 <li><code>merge_ci()</code> combines estimate, lower bound, and upper
 bound columns into a single column.</li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">a n</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">a prop</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>((<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">/</span> <span class="dv">6</span>, <span class="dv">2</span>),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">a deff</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(pi, <span class="dv">2</span>),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">b n</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">b prop</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>((<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">/</span> <span class="dv">6</span>, <span class="dv">2</span>),</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">b deff</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(pi <span class="sc">*</span> <span class="dv">2</span>, <span class="dv">2</span>),</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="st">`</span><span class="at">a n</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="st">`</span><span class="at">a prop</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>((<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">/</span> <span class="dv">6</span>, <span class="dv">2</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="st">`</span><span class="at">a deff</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(pi, <span class="dv">2</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="st">`</span><span class="at">b n</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="st">`</span><span class="at">b prop</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>((<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">/</span> <span class="dv">6</span>, <span class="dv">2</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="st">`</span><span class="at">b deff</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(pi <span class="sc">*</span> <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -680,10 +652,10 @@ bound columns into a single column.</li>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_redundant</span>(<span class="st">&quot;%&quot;</span> <span class="ot">=</span> <span class="st">&quot;prop&quot;</span>, <span class="st">&quot;Design Effect&quot;</span> <span class="ot">=</span> <span class="st">&quot;deff&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment_redundant</span>(<span class="st">&quot; (n)&quot;</span> <span class="ot">=</span> <span class="st">&quot; n$&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">rename_redundant</span>(<span class="st">&quot;%&quot;</span> <span class="ot">=</span> <span class="st">&quot;prop&quot;</span>, <span class="st">&quot;Design Effect&quot;</span> <span class="ot">=</span> <span class="st">&quot;deff&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">augment_redundant</span>(<span class="st">&quot; (n)&quot;</span> <span class="ot">=</span> <span class="st">&quot; n$&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">

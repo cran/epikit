@@ -5,8 +5,8 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  # install.packages("remotes")
-#  remotes::install_github("R4EPI/epikit")
+# # install.packages("remotes")
+# remotes::install_github("R4EPI/epikit")
 
 ## ----load_packages------------------------------------------------------------
 library("epikit")
@@ -25,19 +25,25 @@ df <- data.frame(
 df %>% 
   group_age_categories(years = age_years, months = age_months)
 
-## ----rates--------------------------------------------------------------------
-attack_rate(10, 50)
-case_fatality_rate(2, 50)
-mortality_rate(40, 50000)
-
-## ----cfr, eval = requireNamespace("outbreaks")--------------------------------
-library("outbreaks")
-case_fatality_rate_df(ebola_sim_clean$linelist, 
-  outcome == "Death", 
-  group = gender,
-  add_total = TRUE,
-  mergeCI = TRUE
+## ----rate_data----------------------------------------------------------------
+# Create fake dataframe 
+dat <- data.frame(
+  deaths = 10,
+  population = 50,
+  cfr = 20,
+  lower = 11.24375,
+  upper = 33.03711
 )
+
+
+## ----counts-------------------------------------------------------------------
+
+## create fake dataset
+dat <- data.frame(
+  gender = sample(c("f", "m"), 100, replace = TRUE), 
+  location = sample(c("hospital", "clinic", "community"), 100, replace = TRUE)
+)
+
 
 ## ----unite_ci-----------------------------------------------------------------
 fit <- lm(100/mpg ~ disp + hp + wt + am, data = mtcars)
